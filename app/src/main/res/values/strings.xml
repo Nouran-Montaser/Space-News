@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Space</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hubble_sees_plunging_galaxy_losing_its_gas">Hubble Sees Plunging Galaxy Losing Its Gas</string>
+    <string name="news_image">News Image</string>
+    <string name="view_in_browser">View In Browser</string>
+    <string name="open_in_browser">Open In Browser   </string>
+    <string name="action_open_in_browser">Action Open In Browser</string>
+</resources>
