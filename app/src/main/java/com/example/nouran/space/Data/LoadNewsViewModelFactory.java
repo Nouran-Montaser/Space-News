@@ -6,16 +6,16 @@ import android.support.annotation.NonNull;
 
 public class LoadNewsViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     private final MyDataBase mDb;
-    private final int id;
+    private final int news_id;
 
-    public LoadNewsViewModelFactory(MyDataBase mDb, int id) {
+    public LoadNewsViewModelFactory(MyDataBase mDb, int news_id) {
         this.mDb = mDb;
-        this.id = id;
+        this.news_id = news_id;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new LoadNewsViewModel(mDb, id);
+        return (T) new LoadNewsViewModel(mDb, news_id);
     }
 }

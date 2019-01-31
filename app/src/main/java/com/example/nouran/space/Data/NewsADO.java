@@ -19,8 +19,8 @@ public interface NewsADO {
     @Insert(onConflict = REPLACE)
     void insertNews (News news);
 
-    @Query("SELECT * FROM News WHERE id = :id")
-    LiveData<News> loadNewsById (int id);
+    @Query("SELECT * FROM News WHERE news_id = :news_id")
+    LiveData<News> loadNewsById (int news_id);
 
     @Delete
     void deleteNews(News news);

@@ -31,6 +31,7 @@ import com.example.nouran.space.Data.AppExecutors;
 import com.example.nouran.space.Data.MainViewModel;
 import com.example.nouran.space.Data.MyDataBase;
 import com.example.nouran.space.Data.News;
+import com.google.gson.internal.bind.util.ISO8601Utils;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.Nullable;
@@ -75,8 +76,26 @@ public class NewsDetailActivity extends AppCompatActivity {
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)
 
+        mFavBtn = findViewById(R.id.fav_btn);
 
-        mFavBtn =  findViewById(R.id.fav_btn);
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getNews().observe(this, new Observer<List<News>>() {
+            @Override
+            public void onChanged(@Nullable List<News> m) {
+                ArrayList<News> tmp = new ArrayList<News>(m);
+                Log.i("OOOOOOOOOOOIII  ", mNews.getNews_id());
+
+                for (int i = 0; i < m.size(); i++) {
+                    if (m.get(i).getNews_id().equals(mNews.getNews_id())) {
+                        mFavBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        ISFAVORITE = true;
+                        Toast.makeText(NewsDetailActivity.this, "FAVORITE", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+
         mFavBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -84,28 +103,26 @@ public class NewsDetailActivity extends AppCompatActivity {
                 AppExecutors.getsInstance().getDiskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        if (ISFAVORITE)
-                        {
-                            ISFAVORITE = false ;
+                        if (ISFAVORITE) {
+                            ISFAVORITE = false;
                             mDb.newsADO().deleteNews(mNews);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     mFavBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                                    Toast.makeText(NewsDetailActivity.this , "UNFAV",Toast.LENGTH_SHORT).show();
-                                    Log.i("FAVBTN","UNFAV");
+                                    Toast.makeText(NewsDetailActivity.this, "UNFAV", Toast.LENGTH_SHORT).show();
+                                    Log.i("FAVBTN", "UNFAV");
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             mDb.newsADO().insertNews(mNews);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ISFAVORITE = true ;
+                                    ISFAVORITE = true;
                                     mFavBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
-                                    Toast.makeText(NewsDetailActivity.this , "FAV",Toast.LENGTH_SHORT).show();
-                                    Log.i("FAVBTN","FAV");
+                                    Toast.makeText(NewsDetailActivity.this, "FAV", Toast.LENGTH_SHORT).show();
+                                    Log.i("FAVBTN", "FAV");
                                 }
                             });
                         }
@@ -127,7 +144,8 @@ public class NewsDetailActivity extends AppCompatActivity {
                     i.setData(Uri.parse(news_url));
                     startActivity(i);
                 }
-            }});
+            }
+        });
     }
 
 
@@ -136,7 +154,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(NewsDetailActivity.this);
         String url = "http://hubblesite.org/api/v3/news_release/" + newsID;
 
-        Log.i("PPPPPPPPPPPPPPPPPPPP",url);
+        Log.i("PPPPPPPPPPPPPPPPPPPP", url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -151,7 +169,7 @@ public class NewsDetailActivity extends AppCompatActivity {
                             String _abstract = member.getString("abstract");
                             String thumbnail = member.getString("thumbnail");
                             news_url = member.getString("url");
-                            Log.i("PPPPPPPPPPPP", "hhhh5   " + news_id+"   "+_abstract);
+                            Log.i("PPPPPPPPPPPP", "hhhh5   " + news_id + "   " + _abstract);
                             collapsingToolbarLayout.setTitle("Space News");
                             collapsingToolbarLayout.setSubtitle(mission);
                             bodyView.setText(_abstract);
@@ -201,7 +219,7 @@ public class NewsDetailActivity extends AppCompatActivity {
 
                 sharedPrefsEditor.putString("name", mNews.getName());
 
-                sharedPrefsEditor.putString("NEWS_PREF", mNews.getAbstract());
+                sharedPrefsEditor.putString("NEWS_PREF", mNews.getAbstrac());
                 sharedPrefsEditor.apply();
 
                 break;

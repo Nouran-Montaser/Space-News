@@ -8,6 +8,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.net.ParseException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,11 +23,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.nouran.space.Data.Client;
+import com.example.nouran.space.Data.MainViewModel;
 import com.example.nouran.space.Data.News;
 import com.example.nouran.space.adapter.NewsAdapter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -143,19 +148,10 @@ public class LastNewsFragment extends Fragment {
 
                                 String name = member.getString("name");
                                 String news_id = member.getString("news_id");
-//                            String url = member.getString("url");
-//                            String publication = member.getString("publication");
-//                            String mission = member.getString("mission");
                                 String _abstract = member.getString("abstract");
                                 String thumbnail = member.getString("thumbnail");
                                 Log.i("LastNewsFragmentError", "hhhh5   " + news_id);
-//                            JSONArray  release_videos = member.getJSONArray("release_videos");
-//                            String[] videos = new String[release_videos.length()];
-//                            for(int i=0;i<release_videos.length();i++)
-//                            {
-//                                videos[i] = release_videos.get(i).toString();
-//                            }
-                                details.add(new News(thumbnail, new String[]{}, _abstract, news_id, "", "", "", name));
+                                details.add(new News(thumbnail, _abstract, news_id, "", "", "", name));
                                 Log.i("LastNewsFragmentError", details.size() + "    " + details.get(details.size() - 1));
 
                             } catch (JSONException e) {

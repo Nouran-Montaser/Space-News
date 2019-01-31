@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
-
     }
 
     @Override
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this , FavoriteActivity.class);
                         intent.putParcelableArrayListExtra("fav_items",tmp);
                         startActivity(intent);
-//                        movieRecyclerView.setAdapter(new Adapter(MainActivity.this, m));
                     }
                 });
                 break;

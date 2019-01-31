@@ -93,7 +93,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.myHolder
 //                            } catch (IOException ex) {
 //                                ex.printStackTrace();
 //                            }
-                            //TODO
                         }
                     }
                 });

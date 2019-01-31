@@ -1,5 +1,6 @@
 package com.example.nouran.space;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nouran.space.Data.News;
 import com.example.nouran.space.Data.Videos;
 import com.example.nouran.space.adapter.ExploreAdapter;
 import com.google.android.exoplayer2.C;
@@ -56,12 +58,16 @@ public class VideoActivity extends AppCompatActivity {
     private MediaSource videoSource;
     private String _ID;
     private String video_url;
+    private static SharedPreferences sharedPrefs;
+    private SharedPreferences.Editor sharedPrefsEditor;
+    private static final String MY_PREFS_NAME = "MyPrefsFile";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
+        Log.d("OOOO","oncreate");
 
         _ID = getIntent().getStringExtra("ClickedItem");
 
@@ -71,6 +77,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void requestData(String id) {
 
+        Log.d("OOOO","requestData");
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         String url = "http://hubblesite.org/api/v3/video/" + id;
@@ -85,12 +92,15 @@ public class VideoActivity extends AppCompatActivity {
                         JSONObject member = null;
                         try {
                             member = new JSONObject(response);
-
-//                            JSONObject html_video = new JSONObject(member.getString("html_5_video"));
-//                            video_url = html_video.getString("video_url");
                             JSONArray video_files = new JSONArray(member.getString("video_files"));
                             JSONObject urlObject = video_files.getJSONObject(0);
                             video_url = urlObject.getString("file_url");
+
+                            SharedPreferences.Editor sharedPrefsEditor;
+                            final String MY_PREFS_NAME = "MyPrefsFile";
+                            sharedPrefsEditor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                            sharedPrefsEditor.putString("VIDEO_URL", video_url);
+                            sharedPrefsEditor.apply();
 
                             initializePlayer(Uri.parse(video_url));
 
@@ -114,6 +124,8 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private void initializePlayer(Uri mediaUri) {
+        Log.d("OOOO","Initialize");
+
         // Create a default TrackSelector
         bandwidthMeter = new DefaultBandwidthMeter();
         videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
@@ -147,6 +159,8 @@ public class VideoActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("OOOO","destory");
+
         releasePlayer();
         if (mExoPlayer != null)
             mExoPlayer.release();
@@ -156,19 +170,25 @@ public class VideoActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+        Log.d("OOOO","saveInstance");
+
         outState.putLong("SELECTED_POSITION", position);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        Log.d("OOOO","stop");
+
         releasePlayer();
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Log.d("OOOO","restore");
+
         if (savedInstanceState != null) {
             position = savedInstanceState.getLong("SELECTED_POSITION", C.TIME_UNSET);
         }
@@ -178,6 +198,8 @@ public class VideoActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d("OOOO","pause");
+
         if (mExoPlayer != null) {
             position = mExoPlayer.getCurrentPosition();
             mExoPlayer.getPlayWhenReady();
@@ -187,23 +209,36 @@ public class VideoActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d("OOOO","start");
+
+        sharedPrefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        String urlPref = sharedPrefs.getString("VIDEO_URL", null);
         if (Util.SDK_INT > 23) {
-            initializePlayer(Uri.parse(video_url));
-            mExoPlayer.seekTo(position);
+            if (urlPref != null) {
+                initializePlayer(Uri.parse(urlPref));
+                mExoPlayer.seekTo(position);
+            } else if (video_url != null) {
+                initializePlayer(Uri.parse(video_url));
+                mExoPlayer.seekTo(position);
+            }
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (video_url != null) {
-            if (Util.SDK_INT <= 23 || mPlayerView == null)
-                initializePlayer(Uri.parse(video_url));
-        }
+        Log.d("OOOO","resume");
+        sharedPrefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        String urlPref = sharedPrefs.getString("VIDEO_URL", null);
+        if (Util.SDK_INT <= 23 || mPlayerView == null)
+            initializePlayer(Uri.parse(urlPref));
+
     }
 
 
     private void releasePlayer() {
+        Log.d("OOOO","release");
+
         if (mExoPlayer != null) {
             position = mExoPlayer.getCurrentPosition();
             mExoPlayer.stop();

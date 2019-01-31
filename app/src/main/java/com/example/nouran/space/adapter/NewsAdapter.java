@@ -39,6 +39,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.myHolder> {
     @Override
     public void onBindViewHolder(myHolder holder, final int position) {
 
+
         Log.i("LastNewsFragmentError","LLLL");
         holder.newsTxt.setText(newsList.get(position).getName());
 
@@ -49,7 +50,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.myHolder> {
             public void onClick(View v) {
 
                 Intent intent = new Intent(context, NewsDetailActivity.class);
-//                NewsWrapper.getInstance().setNews(newsList.get(position));
                 intent.putExtra("ClickedItem", newsList.get(position));
                 context.startActivity(intent);
             }
