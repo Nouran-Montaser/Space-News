@@ -8,4 +8,10 @@
     <string name="view_in_browser">View In Browser</string>
     <string name="open_in_browser">Open In Browser   </string>
     <string name="action_open_in_browser">Action Open In Browser</string>
+    <string name="favorite">Favorite</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
+    <!--<string name="add_widget">Add Widget</string>-->
 </resources>

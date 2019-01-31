@@ -1,6 +1,9 @@
 package com.example.nouran.space;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.SubtitleCollapsingToolbarLayout;
@@ -9,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,14 +27,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nouran.space.Data.AppExecutors;
+import com.example.nouran.space.Data.MainViewModel;
+import com.example.nouran.space.Data.MyDataBase;
 import com.example.nouran.space.Data.News;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NewsDetailActivity extends AppCompatActivity {
 
@@ -40,13 +51,19 @@ public class NewsDetailActivity extends AppCompatActivity {
     private ImageView imageView;
     private FloatingActionButton openInBrowserBtn;
     private String news_url;
+    private ImageView mFavBtn;
+    private boolean ISFAVORITE = false;
+    private News mNews;
+    private MyDataBase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
 
-        newsID = getIntent().getStringExtra("ClickedItem");
+        mNews = getIntent().getParcelableExtra("ClickedItem");
+        newsID = mNews.getNews_id();
+        mDb = MyDataBase.getAppDatabase(getApplicationContext());
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
 
         toolbar = findViewById(R.id.news_toolbarr);
@@ -58,6 +75,44 @@ public class NewsDetailActivity extends AppCompatActivity {
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)
 
+
+        mFavBtn =  findViewById(R.id.fav_btn);
+        mFavBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                AppExecutors.getsInstance().getDiskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ISFAVORITE)
+                        {
+                            ISFAVORITE = false ;
+                            mDb.newsADO().deleteNews(mNews);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mFavBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                                    Toast.makeText(NewsDetailActivity.this , "UNFAV",Toast.LENGTH_SHORT).show();
+                                    Log.i("FAVBTN","UNFAV");
+                                }
+                            });
+                        }
+                        else {
+                            mDb.newsADO().insertNews(mNews);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ISFAVORITE = true ;
+                                    mFavBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                                    Toast.makeText(NewsDetailActivity.this , "FAV",Toast.LENGTH_SHORT).show();
+                                    Log.i("FAVBTN","FAV");
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
 
         bodyView = findViewById(R.id.article_body);
         imageView = findViewById(R.id.photo);
@@ -126,5 +181,34 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail_main, menu);
+        return super.onCreateOptionsMenu(menu);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.widget_menu: {
+
+                SharedPreferences.Editor sharedPrefsEditor;
+                final String MY_PREFS_NAME = "MyPrefsFile";
+
+                sharedPrefsEditor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+
+                sharedPrefsEditor.putString("name", mNews.getName());
+
+                sharedPrefsEditor.putString("NEWS_PREF", mNews.getAbstract());
+                sharedPrefsEditor.apply();
+
+                break;
+            }
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
