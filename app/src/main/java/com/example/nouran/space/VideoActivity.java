@@ -114,7 +114,7 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.i("ExploreFragmentError", error + "");
-                Toast.makeText(getApplicationContext(), "Error in connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.error_in_connection), Toast.LENGTH_SHORT).show();
             }
         });
         // Add the request to the RequestQueue.

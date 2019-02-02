@@ -33,7 +33,7 @@ public class FavoriteActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
-        getSupportActionBar().setTitle("Favorite News");
+        getSupportActionBar().setTitle(getResources().getString(R.string.Favorite_News));
 
         tmp = new ArrayList<>();
         mNewsList = findViewById(R.id.fav_recycler_view);

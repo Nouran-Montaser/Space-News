@@ -83,11 +83,11 @@ public class NewsDetailActivity extends AppCompatActivity {
                     if (m.get(i).getNews_id().equals(newsID)) {
                         mFavBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                         ISFAVORITE = true;
-                        collapsingToolbarLayout.setTitle("Space News");
+                        collapsingToolbarLayout.setTitle(getString(R.string.app_name));
                         collapsingToolbarLayout.setSubtitle(m.get(i).getMission());
                         bodyView.setText(m.get(i).getAbstrac());
                         Picasso.get().load(m.get(i).getThumbnail()).into(imageView);
-                        Toast.makeText(NewsDetailActivity.this, "FAVORITE", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(NewsDetailActivity.this, "FAVORITE", Toast.LENGTH_SHORT).show();
                         mNews = new News(m.get(i).getThumbnail(),m.get(i).getAbstrac(),m.get(i).getNews_id(),m.get(i).getUrl(),m.get(i).getMission()
                                 ,m.get(i).getPublication(),m.get(i).getName());
 
@@ -166,7 +166,7 @@ public class NewsDetailActivity extends AppCompatActivity {
                             String _abstract = member.getString("abstract");
                             String thumbnail = member.getString("thumbnail");
                             news_url = member.getString("url");
-                            collapsingToolbarLayout.setTitle("Space News");
+                            collapsingToolbarLayout.setTitle(getString(R.string.app_name));
                             collapsingToolbarLayout.setSubtitle(mission);
                             bodyView.setText(_abstract);
                             Picasso.get().load(thumbnail).into(imageView);
@@ -182,7 +182,7 @@ public class NewsDetailActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.i("NewsDetailError", error + "");
                 if (ac.equals("Last News")) {
-                    Toast.makeText(NewsDetailActivity.this, "Error in connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewsDetailActivity.this, getString(R.string.error_in_connection), Toast.LENGTH_SHORT).show();
                 }
             }
         });

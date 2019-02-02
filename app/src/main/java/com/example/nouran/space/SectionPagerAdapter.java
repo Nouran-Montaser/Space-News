@@ -1,14 +1,17 @@
 package com.example.nouran.space;
 
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 class SectionPagerAdapter extends FragmentPagerAdapter {
 
-    public SectionPagerAdapter(FragmentManager fm) {
+    private Context context ;
+    public SectionPagerAdapter(FragmentManager fm , Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -35,9 +38,9 @@ class SectionPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "All News";
+                return context.getString(R.string.All_News);
             case 1:
-                return "Explore";
+                return context.getString(R.string.Explore);
             default:
                 return null;
         }

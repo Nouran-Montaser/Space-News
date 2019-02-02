@@ -41,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
         mToolbar = findViewById(R.id.main_page_toobar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Space News");
+        getSupportActionBar().setTitle(getString(R.string.app_name));
 
         mViewPager = findViewById(R.id.tabPager);
-        mSectionPagerAdapter = new SectionPagerAdapter(getSupportFragmentManager());//Return the FragmentManager for interacting with fragments associated with this activity.
+        mSectionPagerAdapter = new SectionPagerAdapter(getSupportFragmentManager(),MainActivity.this);//Return the FragmentManager for interacting with fragments associated with this activity.
         mViewPager.setAdapter(mSectionPagerAdapter);
 
         mTabLayout = findViewById(R.id.main_tabs);
