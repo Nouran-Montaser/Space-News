@@ -18,5 +18,16 @@
     <string name="Favorite_News">Favorite News</string>
 <string name="All_News">All News</string>
     <string name="Explore">Explore</string>
-    <!--<string name="add_widget">Add Widget</string>-->
+    <string name="Watch_Video">Watch Video</string>
+    <string name="Set_As_Wallpaper_Picture">Set As Wallpaper Picture</string>
+    <string name="Your_WallPaper_picture_has_been_changed">"Your WallPaper picture has been changed"</string>
+    <string name="Please_wait...">Please wait...</string>
+    <string name="article_image">Article Image</string>
+    <string name="favorite_image">favorite image</string>
+    <string name="not_interested_image">not interested image</string>
+    <string name="explore_image">explore image</string>
+    <string name="watch">Watch</string>
+    <string name="videos_for_you">Videos for you ...</string>
+    <string name="watch_logo">watch logo</string>
+    <string name="no_wifi_image">no wifi image</string>
 </resources>

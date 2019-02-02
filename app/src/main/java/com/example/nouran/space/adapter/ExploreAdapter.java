@@ -58,7 +58,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.myHolder
             public boolean onLongClick(View v) {
                 final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(context);
                 alert.setTitle(exploreImgList.get(position).getNama());
-                String[] items = {"Watch Video","Set As Wallpaper Picture"};
+                String[] items = {context.getString(R.string.Watch_Video),context.getString(R.string.Set_As_Wallpaper_Picture)};
                 alert.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -69,7 +69,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.myHolder
                         }
                         else if(which ==1)
                         {
-                            Toast.makeText(context, "Your WallPaper picture has been changed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, context.getString(R.string.Your_WallPaper_picture_has_been_changed), Toast.LENGTH_SHORT).show();
                             new SetWallpaperTask().execute(exploreImgList.get(position).getImage());
                         }
                     }
@@ -114,8 +114,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.myHolder
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
             try {
                 wallpaperManager.setBitmap(result);
-//                progressDialog.dismiss();
-                Toast.makeText(context, "Set wallpaper successfully", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -126,10 +125,10 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.myHolder
             super.onPreExecute();
             Log.i("HHHHHHHHH","here   "+imgUrl);
 
-//            progressDialog = new ProgressDialog(context);
-//            progressDialog.setMessage("Please wait...");
-//            progressDialog.setCancelable(false);
-//            progressDialog.show();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage(context.getString(R.string.Please_wait___));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
     }
 
