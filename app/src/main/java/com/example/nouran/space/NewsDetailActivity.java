@@ -16,11 +16,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,46 +29,43 @@ import com.example.nouran.space.Data.AppExecutors;
 import com.example.nouran.space.Data.MainViewModel;
 import com.example.nouran.space.Data.MyDataBase;
 import com.example.nouran.space.Data.News;
-import com.google.gson.internal.bind.util.ISO8601Utils;
 import com.squareup.picasso.Picasso;
-
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class NewsDetailActivity extends AppCompatActivity {
 
     private SubtitleCollapsingToolbarLayout collapsingToolbarLayout;
 
-    private Toolbar toolbar;
     private String newsID;
     private TextView bodyView;
     private ImageView imageView;
-    private FloatingActionButton openInBrowserBtn;
     private String news_url;
     private ImageView mFavBtn;
     private boolean ISFAVORITE = false;
     private News mNews;
     private MyDataBase mDb;
+    private String ac;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
 
-        mNews = getIntent().getParcelableExtra("ClickedItem");
-        newsID = mNews.getNews_id();
+        newsID = getIntent().getStringExtra("ClickedItem");
+        ac = getIntent().getStringExtra("ClickedItem_context");
+
+        requestDetailedData();
         mDb = MyDataBase.getAppDatabase(getApplicationContext());
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
 
-        toolbar = findViewById(R.id.news_toolbarr);
+        Toolbar toolbar = findViewById(R.id.news_toolbarr);
         setSupportActionBar(toolbar);
 
         ActionBar ab = getSupportActionBar();
+        assert ab != null;
         ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
@@ -78,18 +73,24 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         mFavBtn = findViewById(R.id.fav_btn);
 
+
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         viewModel.getNews().observe(this, new Observer<List<News>>() {
             @Override
             public void onChanged(@Nullable List<News> m) {
-                ArrayList<News> tmp = new ArrayList<News>(m);
-                Log.i("OOOOOOOOOOOIII  ", mNews.getNews_id());
-
+                assert m != null;
                 for (int i = 0; i < m.size(); i++) {
-                    if (m.get(i).getNews_id().equals(mNews.getNews_id())) {
+                    if (m.get(i).getNews_id().equals(newsID)) {
                         mFavBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                         ISFAVORITE = true;
+                        collapsingToolbarLayout.setTitle("Space News");
+                        collapsingToolbarLayout.setSubtitle(m.get(i).getMission());
+                        bodyView.setText(m.get(i).getAbstrac());
+                        Picasso.get().load(m.get(i).getThumbnail()).into(imageView);
                         Toast.makeText(NewsDetailActivity.this, "FAVORITE", Toast.LENGTH_SHORT).show();
+                        mNews = new News(m.get(i).getThumbnail(),m.get(i).getAbstrac(),m.get(i).getNews_id(),m.get(i).getUrl(),m.get(i).getMission()
+                                ,m.get(i).getPublication(),m.get(i).getName());
+
                     }
                 }
             }
@@ -110,7 +111,6 @@ public class NewsDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     mFavBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                                    Toast.makeText(NewsDetailActivity.this, "UNFAV", Toast.LENGTH_SHORT).show();
                                     Log.i("FAVBTN", "UNFAV");
                                 }
                             });
@@ -121,7 +121,6 @@ public class NewsDetailActivity extends AppCompatActivity {
                                 public void run() {
                                     ISFAVORITE = true;
                                     mFavBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
-                                    Toast.makeText(NewsDetailActivity.this, "FAV", Toast.LENGTH_SHORT).show();
                                     Log.i("FAVBTN", "FAV");
                                 }
                             });
@@ -134,8 +133,8 @@ public class NewsDetailActivity extends AppCompatActivity {
         bodyView = findViewById(R.id.article_body);
         imageView = findViewById(R.id.photo);
         collapsingToolbarLayout.setExpandedTitleTextColor(R.color.colorTitlte);
-        openInBrowserBtn = findViewById(R.id.browser_fab);
-        requestDetailedData();
+        FloatingActionButton openInBrowserBtn = findViewById(R.id.browser_fab);
+//        requestDetailedData();
         openInBrowserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,13 +147,11 @@ public class NewsDetailActivity extends AppCompatActivity {
         });
     }
 
-
     private void requestDetailedData() {
 
         RequestQueue queue = Volley.newRequestQueue(NewsDetailActivity.this);
-        String url = "http://hubblesite.org/api/v3/news_release/" + newsID;
+        final String url = "http://hubblesite.org/api/v3/news_release/" + newsID;
 
-        Log.i("PPPPPPPPPPPPPPPPPPPP", url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -169,17 +166,11 @@ public class NewsDetailActivity extends AppCompatActivity {
                             String _abstract = member.getString("abstract");
                             String thumbnail = member.getString("thumbnail");
                             news_url = member.getString("url");
-                            Log.i("PPPPPPPPPPPP", "hhhh5   " + news_id + "   " + _abstract);
                             collapsingToolbarLayout.setTitle("Space News");
                             collapsingToolbarLayout.setSubtitle(mission);
                             bodyView.setText(_abstract);
                             Picasso.get().load(thumbnail).into(imageView);
-                            JSONArray release_videos = member.getJSONArray("release_videos");
-                            String[] videos = new String[release_videos.length()];
-                            for (int i = 0; i < release_videos.length(); i++) {
-                                videos[i] = release_videos.get(i).toString();
-                            }
-
+                            mNews = new News(thumbnail, _abstract, news_id, url, mission, publication, name);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -189,14 +180,13 @@ public class NewsDetailActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.i("LastNewsFragmentError", error + "");
-                Toast.makeText(NewsDetailActivity.this, "Error in connection", Toast.LENGTH_SHORT).show();
+                Log.i("NewsDetailError", error + "");
+                if (ac.equals("Last News")) {
+                    Toast.makeText(NewsDetailActivity.this, "Error in connection", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
-
     }
 
     @Override
@@ -229,4 +219,5 @@ public class NewsDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -8,10 +8,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.net.ParseException;
+import android.content.Context;
+import android.graphics.Paint;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,44 +20,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.example.nouran.space.Data.Client;
-import com.example.nouran.space.Data.MainViewModel;
 import com.example.nouran.space.Data.News;
 import com.example.nouran.space.adapter.NewsAdapter;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
-
-//import retrofit2.Call;
-//import retrofit2.Callback;
-//import retrofit2.Response;
-//import retrofit2.Retrofit;
-//import retrofit2.converter.gson.GsonConverterFactory;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class LastNewsFragment extends Fragment {
 
     private RecyclerView mNewsList;
     private ArrayList<News> details;
     private ArrayList<String> _IDList;
     private NewsAdapter newsAdapter;
+    private LinearLayout conecctionLayout;
+    private ProgressBar mProgressbar;
+    private TextView conecctionFTxt;
+    private TextView conecctionSTxt;
+    private boolean connected = false;
+    private LinearLayoutManager linearLayoutManager;
+    private long currentVisiblePosition = 0;
+
 
     public LastNewsFragment() {
-        // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,11 +59,43 @@ public class LastNewsFragment extends Fragment {
         mMainView = inflater.inflate(R.layout.fragment_last_news, container, false);
 
         mNewsList = mMainView.findViewById(R.id.news_recyclerView);
+        conecctionLayout = mMainView.findViewById(R.id.connection_layout);
+        conecctionFTxt = mMainView.findViewById(R.id.connection_txt1);
+        conecctionSTxt = mMainView.findViewById(R.id.connection_txt2);
+        conecctionSTxt.setPaintFlags(conecctionSTxt.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
+        conecctionSTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkInternetConnection();
+            }
+        });
+
+        mProgressbar = mMainView.findViewById(R.id.lastnews_Progressbar);
+
+        linearLayoutManager = new LinearLayoutManager(getContext());
         mNewsList.setHasFixedSize(true);
-        mNewsList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mNewsList.setLayoutManager(linearLayoutManager);
+
 
         return mMainView;
+    }
+
+    public void checkInternetConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            connected = true;
+            conecctionLayout.setVisibility(View.GONE);
+            mProgressbar.setVisibility(View.VISIBLE);
+            mNewsList.setVisibility(View.GONE);
+            requestData();
+        } else {
+            connected = false;
+            conecctionLayout.setVisibility(View.VISIBLE);
+            mNewsList.setVisibility(View.GONE);
+            mProgressbar.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -79,40 +104,36 @@ public class LastNewsFragment extends Fragment {
 
         details = new ArrayList<>();
         _IDList = new ArrayList<>();
-        requestData();
+        checkInternetConnection();
+//        requestData();
     }
 
     private void requestData() {
-
-        // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://hubblesite.org/api/v3/news";
-
-
-        // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
                         try {
                             JSONArray all = new JSONArray(response);
-                            String name, id;
+                            String id;
+                            String mName;
+
                             for (int i = 0; i < all.length(); i++) {
                                 JSONObject member = all.getJSONObject(i);
-//                                name = member.getString("name");
                                 id = member.getString("news_id");
+                                mName = member.getString("name");
                                 _IDList.add(id);
-                                Log.i("LastNewsFragmentError", "hhhh1");
+                                details.add(new News("", "", id, "", "", "", mName));
                             }
-                            if (requestDetailedData(_IDList) == null)
-                                Log.i("ERROR ", "ERROR IN CONNECTION");
-                            else {
-                                Log.i("LastNewsFragmentError", "hhhhoooppp");
 
-                                newsAdapter = new NewsAdapter(getContext(), requestDetailedData(_IDList));
-                                mNewsList.setAdapter(newsAdapter);
-                            }
-                            Log.i("LastNewsFragmentError", "hhhh");
+                            mProgressbar.setVisibility(View.GONE);
+                            conecctionLayout.setVisibility(View.GONE);
+                            mNewsList.setVisibility(View.VISIBLE);
+                            newsAdapter = new NewsAdapter(getContext(), details, "Last News");
+                            mNewsList.setAdapter(newsAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -121,57 +142,24 @@ public class LastNewsFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.i("LastNewsFragmentError", error + "");
-                Toast.makeText(getActivity(), "Error in connection", Toast.LENGTH_SHORT).show();
+                conecctionLayout.setVisibility(View.VISIBLE);
+                mProgressbar.setVisibility(View.GONE);
+                mNewsList.setVisibility(View.GONE);
             }
         });
-        // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
-
     }
 
-    private ArrayList<News> requestDetailedData(final ArrayList<String> idList) {
-        Log.i("LastNewsFragmentError", "hhhh3");
-
-        for (int i = 0; i < idList.size(); i++) {
-            // Instantiate the RequestQueue.
-            RequestQueue queue = Volley.newRequestQueue(getContext());
-            String url = "http://hubblesite.org/api/v3/news_release/" + idList.get(i);
-            Log.i("LastNewsFragmentError", url);
-            // Request a string response from the provided URL.
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                JSONObject member = new JSONObject(response);
-
-                                String name = member.getString("name");
-                                String news_id = member.getString("news_id");
-                                String _abstract = member.getString("abstract");
-                                String thumbnail = member.getString("thumbnail");
-                                Log.i("LastNewsFragmentError", "hhhh5   " + news_id);
-                                details.add(new News(thumbnail, _abstract, news_id, "", "", "", name));
-                                Log.i("LastNewsFragmentError", details.size() + "    " + details.get(details.size() - 1));
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.i("LastNewsFragmentError", error + "");
-                    Toast.makeText(getActivity(), "Error in connection", Toast.LENGTH_SHORT).show();
-                }
-            });
-            // Add the request to the RequestQueue.
-            queue.add(stringRequest);
-        }
-        return details;
+    @Override
+    public void onResume() {
+        super.onResume();
+         mNewsList.getLayoutManager().scrollToPosition((int) currentVisiblePosition);
+        currentVisiblePosition = 0;
     }
 
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        currentVisiblePosition = ((LinearLayoutManager) mNewsList.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+    }
 }

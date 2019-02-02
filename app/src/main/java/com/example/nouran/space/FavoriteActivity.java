@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.nouran.space.Data.News;
 import com.example.nouran.space.adapter.NewsAdapter;
@@ -19,6 +21,7 @@ public class FavoriteActivity extends AppCompatActivity {
     private NewsAdapter newsAdapter;
     private RecyclerView mNewsList;
     private Toolbar mToolbar;
+    private LinearLayout favLinearLayout;
 
 
     @Override
@@ -36,13 +39,26 @@ public class FavoriteActivity extends AppCompatActivity {
         mNewsList = findViewById(R.id.fav_recycler_view);
         mNewsList.setHasFixedSize(true);
         mNewsList.setLayoutManager(new LinearLayoutManager(FavoriteActivity.this));
+        favLinearLayout = findViewById(R.id.Fav_layout);
 
         tmp = getIntent().getParcelableArrayListExtra("fav_items");
+        Log.i("Tmp size",tmp.size()+"");
+        if (tmp.size()  == 0)
+        {
+            favLinearLayout.setVisibility(View.VISIBLE);
+            mNewsList.setVisibility(View.GONE);
+        }
+        else {
 
-        Log.i("favActivity", tmp.toString());
+            favLinearLayout.setVisibility(View.GONE);
+            mNewsList.setVisibility(View.VISIBLE);
+            Log.i("favActivity", tmp.toString());
 
-        newsAdapter = new NewsAdapter(FavoriteActivity.this, tmp);
-        mNewsList.setAdapter(newsAdapter);
+            newsAdapter = new NewsAdapter(FavoriteActivity.this, tmp,"Favorite");
+            mNewsList.setAdapter(newsAdapter);
+
+        }
+
 
 
     }

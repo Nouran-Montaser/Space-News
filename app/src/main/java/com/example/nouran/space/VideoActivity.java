@@ -230,9 +230,10 @@ public class VideoActivity extends AppCompatActivity {
         Log.d("OOOO","resume");
         sharedPrefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         String urlPref = sharedPrefs.getString("VIDEO_URL", null);
-        if (Util.SDK_INT <= 23 || mPlayerView == null)
-            initializePlayer(Uri.parse(urlPref));
-
+        if (urlPref!=null) {
+            if (Util.SDK_INT <= 23 || mPlayerView == null)
+                initializePlayer(Uri.parse(urlPref));
+        }
     }
 
 

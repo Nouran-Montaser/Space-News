@@ -9,6 +9,48 @@
         android:id="@+id/news_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="7dp" />
+        android:layout_marginTop="7dp"/>
+
+
+    <ProgressBar
+        android:id="@+id/lastnews_Progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:visibility="gone"
+        android:maxHeight="100dip"
+        android:maxWidth="10dip"
+        android:minHeight="100dip"
+        android:minWidth="10dip" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/connection_layout"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_signal_wifi_off_black_24dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/error_in_connection"
+        android:textSize="20sp"
+        android:id="@+id/connection_txt1"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/retry"
+        android:textColor="#1a30dd"
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:id="@+id/connection_txt2"/>
+
+    </LinearLayout>
 
 </FrameLayout>

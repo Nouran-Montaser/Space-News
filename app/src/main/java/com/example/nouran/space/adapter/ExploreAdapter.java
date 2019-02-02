@@ -69,30 +69,8 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.myHolder
                         }
                         else if(which ==1)
                         {
-                            Toast.makeText(context, "prograss", Toast.LENGTH_SHORT).show();
-//                            Bitmap result= null;
-//                            try {
-//                                result = Picasso.get().load(imgUrl).get();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
-//                            try {
-//                                wallpaperManager.setBitmap(result);
-//                            } catch (IOException ex) {
-//                                ex.printStackTrace();
-//                            }
+                            Toast.makeText(context, "Your WallPaper picture has been changed", Toast.LENGTH_SHORT).show();
                             new SetWallpaperTask().execute(exploreImgList.get(position).getImage());
-//                            Bitmap result=Picasso.with.load(exploreImgList.get(position).getImage())
-//                                    .get();
-//
-//                            WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
-//                            try {
-//                                wallpaperManager.setBitmap(result);
-//                            } catch (IOException ex) {
-//                                ex.printStackTrace();
-//                            }
                         }
                     }
                 });
