@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'key'
-            keyPassword 'passwordOne'
+            keyAlias 'key0'
+            keyPassword 'password'
             storeFile file('E:/Space-News/Keystore.jks')
-            storePassword 'passwordTwo'
+            storePassword 'password'
         }
     }
     compileSdkVersion 28
@@ -22,8 +22,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
             signingConfig signingConfigs.config
         }
     }
